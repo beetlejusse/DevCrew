@@ -1,29 +1,51 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
-import { AuthOptions } from "next-auth";
-import User from "@/models/User.model";
+import { NextAuthOptions } from "next-auth";
+import userModel from "@/models/User.model";
 import dbConnect from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
+      id: "credentials",
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        email: {label: "Email", type: "text"},
+        password: {label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        await dbConnect();
-        const user = await User.findOne({ email: credentials?.email });
+      async authorize(credentials: any): Promise<any> {
+        try {
+          await dbConnect();
 
-        if (!user) throw new Error("User not found");
+          if (!credentials?.email || !credentials?.password) {
+            throw new Error("Email and password are required");
+          }
 
-        const isValid = await bcrypt.compare(credentials!.password, user.passwordHash);
-        if (!isValid) throw new Error("Invalid password");
+          // Find user by email or username
+          const user = await userModel.findOne({
+            $or: [
+              { email: credentials.identifier }, 
+              { userName: credentials.identifier }, 
+            ],
+          });
 
-        return { id: user._id.toString(), name: user.name, email: user.email };
+          if (!user) {
+            throw new Error("No user found with this email or username");
+          }
+          const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
+          if (!isPasswordCorrect) {
+            throw new Error("Incorrect password");
+          }
+          return {
+            _id: user._id,
+            userName: user.userName,
+            email: user.email,
+          };
+        } catch (error: any) {
+          throw new Error(error.message || "Authentication failed");
+        }
       },
     }),
     GoogleProvider({
@@ -35,19 +57,27 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GITHUB_SECRET!,
     }),
   ],
-  pages: {
-    signIn: "/login",
-  },
-  session: {
-    strategy: "jwt",
-  },
   callbacks: {
     async session({ session, token }) {
-      if (session.user) {
-        (session.user as any).id = token.sub;
+      if (token) {
+        session.user._id = token._id;
+        session.user.userName = token.userName;
       }
       return session;
     },
+    async jwt({ token, user }) {
+      if (user) {
+        token._id = user._id?.toString();
+        token.userName = user.userName;
+      }
+      return token;
+    },
+  },
+  pages: {
+    signIn: "/sign-in",
+  },
+  session: {
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

@@ -6,14 +6,15 @@ type connectionObject = {
 const connection: connectionObject = {}
 
 async function dbConnect(): Promise<void>{
+    const uri = process.env.MONGODBURI;
+if (!uri) throw new Error("MONGODBURI not found in environment variables");
     if(connection.isConnected){
         console.group("database already connected")
         return ;
     }
 
     try {
-        const db = await mongoose.connect(process.env.MONGODBURI || "", {})
-
+        const db = await mongoose.connect(uri || "", {})
         connection.isConnected = db.connections[0].readyState
         console.log("DB Connected Successfully");
     } catch (error) {

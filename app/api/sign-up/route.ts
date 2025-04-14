@@ -48,10 +48,7 @@ export async function POST(request: Request) {
                 email,
                 password: hashpassword
             })
-
-            //saving the user
             // await newUser.save()
-
         }
         return Response.json({
             success: true,

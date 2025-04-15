@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Code } from "lucide-react"
+import { Code, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import SignIn from "@/app/(auth)/sign-in/page"
@@ -98,7 +98,9 @@ export function NavBar({ className, showSignIn = true, showSignUp = true, logoOn
       </div>
 
       <SignIn open={isLoginOpen} onClose={() => setIsLoginOpen(false)} onSwitchToSignUp={switchToSignUp} />
-      <SignUp open={isSignUpOpen} onClose={() => setIsSignUpOpen(false)}  />
+      <SignUp open={isSignUpOpen} onClose={() => setIsSignUpOpen(false)} onSwitchToSignIn={function (): void {
+        throw new Error("Function not implemented.")
+      } }  />
     </header>
   )
 }

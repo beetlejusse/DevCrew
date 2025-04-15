@@ -4,7 +4,7 @@ import React from "react";
 
 const Working = () => {
   return (
-    <section id="how-it-works" className="py-20 relative">
+    <section className="py-20 relative">
       <div className="container relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">

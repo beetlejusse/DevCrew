@@ -1,8 +1,9 @@
 "use client";
 
-import { Code } from "lucide-react";
+import { Code, GithubIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import {motion} from "framer-motion";
 
 const Footer = () => {
   return (
@@ -105,6 +106,19 @@ const Footer = () => {
         </div>
         <div className="border-t border-white/10 mt-12 pt-8 text-center text-white/60 animate-fade-in-up animation-delay-600">
           <p>© {new Date().getFullYear()} DevCrew. All rights reserved.</p>
+          <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.4 }}
+          viewport={{ once: true }}
+          className="mt-6 text-center text-foreground/40 text-sm"
+        >
+          Made with ❤️ by{" "}
+          <a href="https://github.com/beetlejusse" target="_blank" className="underline hover:text-vibrant-accent">
+            beetlejusse
+          </a>{" "}
+          <GithubIcon className="inline w-4 h-4 ml-1" />
+        </motion.div>
         </div>
       </div>
     </footer>

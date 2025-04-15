@@ -8,10 +8,12 @@ export interface Hackathon extends Document {
   url?: string;
   participants: mongoose.Types.ObjectId[];
   createdAt: Date;
+  coverPhoto?: string;
 }
 
 const HackathonSchema = new Schema<Hackathon>({
   title: { type: String, required: true },
+  coverPhoto: { type: String, default: "", required: true },
   description: String,
   startDate: Date,
   endDate: Date,
@@ -20,4 +22,5 @@ const HackathonSchema = new Schema<Hackathon>({
   createdAt: { type: Date, default: Date.now },
 });
 
-export default models.Hackathon || model<Hackathon>("Hackathon", HackathonSchema);
+const hackModel = models.Hackathon || model<Hackathon>("Hackathon", HackathonSchema);
+export default hackModel;

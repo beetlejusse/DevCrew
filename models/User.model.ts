@@ -1,7 +1,12 @@
 import mongoose, { Schema, Document, models, model } from "mongoose";
 
+export interface Message extends Document {
+    content: string;
+    createdAt: Date;
+}
+
 export interface User extends Document {
-    name: string;
+    userName: string;
     email: string;
     password: string;
     avatar?: string;
@@ -20,7 +25,7 @@ export interface User extends Document {
 }
 
 const UserSchema = new Schema<User>({
-    name: { type: String, required: true },
+    userName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     avatar: String,
@@ -38,4 +43,5 @@ const UserSchema = new Schema<User>({
     createdAt: { type: Date, default: Date.now },
 });
 
-export default models.User || model<User>("User", UserSchema);
+const userModel = models.User || model<User>("User", UserSchema);
+export default userModel

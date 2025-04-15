@@ -1,23 +1,36 @@
 "use client";
 
-import React from 'react'
-import { Sparkles, ArrowRight } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Sparkles, ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import CTA from "@/components/custom-components/CTA";
 import Footer from "@/components/custom-components/Footer";
 import Working from "@/components/custom-components/Working";
+import SignupPage from "@/app/(auth)/sign-up/page";
+import SignIn from "@/app/(auth)/sign-in/page";
 
 const Landingpage = () => {
+  const [openSignupModal, setOpenSignupModal] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false);
+  const workingRef = useRef<HTMLDivElement>(null);
+
+  const scrollToWorking = () => {
+    if (workingRef.current) {
+      workingRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <>
       <section className="relative py-20 md:py-32 overflow-hidden">
+        {/* Background Gradient Circles */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-[30%] -left-[10%] w-[70%] h-[70%] rounded-full bg-[#3B82F6]/10 blur-[120px] animate-pulse-slow"></div>
           <div className="absolute -bottom-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-[#3B82F6]/10 blur-[120px] animate-pulse-slow animation-delay-2000"></div>
           <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] rounded-full bg-[#8B5CF6]/10 blur-[120px] animate-pulse-slow animation-delay-1000"></div>
         </div>
 
+        {/* Main Container */}
         <div className="container relative z-10">
           <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm animate-fade-in-down">
@@ -39,24 +52,23 @@ const Landingpage = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animation-delay-500">
-              <Link href="/sign-up">
-                <Button
-                  size="lg"
-                  className="bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-full px-8 h-14 text-base transition-all duration-300 hover:shadow-glow hover:scale-105"
-                >
-                  Get started{" "}
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link href="#how-it-works">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="text-white border-white/20 hover:bg-white/10 rounded-full px-8 h-14 text-base transition-all duration-300"
-                >
-                  Learn More
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                onClick={() => setOpenSignupModal(true)}
+                className="bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-full px-8 h-14 text-base transition-all duration-300 hover:shadow-glow hover:scale-105"
+              >
+                Get started{" "}
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={scrollToWorking}
+                className="text-white border-white/20 hover:bg-white/10 rounded-full px-8 h-14 text-base transition-all duration-300"
+              >
+                Learn More
+              </Button>
             </div>
           </div>
 
@@ -99,12 +111,36 @@ const Landingpage = () => {
             </div>
           </div>
         </div>
+
+        <div className="fixed bottom-5 right-5 z-50">
+          <a
+            href="https://github.com/beetlejusse/DevCrew"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-medium backdrop-blur-sm hover:bg-white/10 transition-all duration-300"
+          >
+            <Star className="h-4 w-4 mr-2 text-[#3B82F6] animate-pulse" />
+            Star on GitHub
+          </a>
+        </div>
       </section>
-      <Working />
-      <CTA />
+
+      {/* Working Section Reference for Smooth Scroll */}
+      <div ref={workingRef}>
+        <Working />
+      </div>
+
+      <CTA onOpenSignInModal={() => setShowSignIn(true)} />
       <Footer />
+
+      <SignIn open={showSignIn} onClose={() => setShowSignIn(false)} onSwitchToSignUp={() => setOpenSignupModal(true)} />
+      <SignupPage
+        open={openSignupModal}
+        onClose={() => setOpenSignupModal(false)}
+        onSwitchToSignIn={() => setShowSignIn(true)}
+      />
     </>
   );
-}
+};
 
-export default Landingpage
+export default Landingpage;

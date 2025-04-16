@@ -7,7 +7,7 @@ import CTA from "@/components/custom-components/CTA";
 import Footer from "@/components/custom-components/Footer";
 import Working from "@/components/custom-components/Working";
 import SignupPage from "@/app/(auth)/sign-up/page";
-import SignIn from "@/app/(auth)/sign-in/page";
+import SignInPage from "@/app/(auth)/sign-in/page";
 
 const Landingpage = () => {
   const [openSignupModal, setOpenSignupModal] = useState(false);
@@ -54,7 +54,7 @@ const Landingpage = () => {
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animation-delay-500">
               <Button
                 size="lg"
-                onClick={() => setOpenSignupModal(true)}
+                onClick={() => setShowSignIn(true)}
                 className="bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-full px-8 h-14 text-base transition-all duration-300 hover:shadow-glow hover:scale-105"
               >
                 Get started{" "}
@@ -133,11 +133,11 @@ const Landingpage = () => {
       <CTA onOpenSignInModal={() => setShowSignIn(true)} />
       <Footer />
 
-      <SignIn open={showSignIn} onClose={() => setShowSignIn(false)} onSwitchToSignUp={() => setOpenSignupModal(true)} />
+      <SignInPage open={showSignIn} onClose={() => setShowSignIn(false)} onSwitchToSignUp={() => setOpenSignupModal(true)} />
       <SignupPage
         open={openSignupModal}
         onClose={() => setOpenSignupModal(false)}
-        onSwitchToSignIn={() => setShowSignIn(true)}
+        // onSwitchToSignIn={() => setShowSignIn(true)}
       />
     </>
   );

@@ -37,7 +37,7 @@ export const signupSchema = z.object({
 })
 
 export const signupFormSchema = z.object({
-    username: z.string().min(3, {
+    userName: z.string().min(3, {
       message: "Username must be at least 3 characters.",
     }),
     email: z.string().email(),

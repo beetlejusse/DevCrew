@@ -98,9 +98,7 @@ export function NavBar({ className, showSignIn = true, showSignUp = true, logoOn
       </div>
 
       <SignIn open={isLoginOpen} onClose={() => setIsLoginOpen(false)} onSwitchToSignUp={switchToSignUp} />
-      <SignUp open={isSignUpOpen} onClose={() => setIsSignUpOpen(false)} onSwitchToSignIn={function (): void {
-        throw new Error("Function not implemented.")
-      } }  />
+      <SignUp open={isSignUpOpen} onClose={() => setIsSignUpOpen(false)}  />
     </header>
   )
 }

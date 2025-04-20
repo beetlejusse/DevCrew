@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,18 +16,47 @@ import {
   Bell,
   MessageSquare,
   User,
-  Settings,
   LogOut,
+  X,
+  Loader2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useSession, signOut } from "next-auth/react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useClickAway } from "react-use";
+
+// Define interfaces for type safety
+interface UserType {
+  _id: string;
+  userName: string;
+  email: string;
+  avatar?: string;
+}
+
+interface SearchResultType {
+  _id: string;
+  userName: string;
+  email: string;
+  avatar?: string;
+}
 
 const DashNav = () => {
   const { data: session } = useSession();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserType | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<SearchResultType[]>([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [showResults, setShowResults] = useState<boolean>(false);
+  const searchResultsRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  
+  // Close search results when clicking outside
+  useClickAway(searchResultsRef, () => {
+    setShowResults(false);
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,6 +70,49 @@ const DashNav = () => {
 
     fetchUser();
   }, []);
+
+  // Debounce search to avoid too many requests
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery.trim().length >= 2) {
+        handleSearch();
+      } else {
+        setSearchResults([]);
+        setShowResults(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+    
+    setIsSearching(true);
+    try {
+      const res = await axios.get(`/api/search?query=${encodeURIComponent(searchQuery)}`);
+      setSearchResults(res.data.users || []);
+      setShowResults(true);
+    } catch (error) {
+      console.error("Search error:", error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleUserClick = (userId: string) => {
+    setShowResults(false);
+    setSearchQuery("");
+    // Navigate to the user profile page
+    router.push(`/user/${userId}`);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setSearchResults([]);
+    setShowResults(false);
+  };
 
   return (
     <header className="w-[calc(100%-2rem)] mx-4 mt-4 z-50 transition-all duration-500 rounded-xl border border-white/10 bg-[#050A14]/80 backdrop-blur-lg glow-border animate-pulse-glow">
@@ -63,7 +135,62 @@ const DashNav = () => {
             type="search"
             placeholder="Search teammates, hackathons..."
             className="w-full pl-8 md:w-[300px] bg-[#111827] border-white/10 text-white placeholder:text-white/40 focus-visible:ring-[#3B82F6] transition-all duration-300 focus:scale-105 focus:glow-border-strong"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => {
+              if (searchResults.length > 0) {
+                setShowResults(true);
+              }
+            }}
           />
+          {searchQuery && (
+            <button 
+              className="absolute right-2.5 text-white/40 hover:text-white/70"
+              onClick={clearSearch}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+          
+          {/* Search Results Dropdown */}
+          {showResults && (
+            <div 
+              ref={searchResultsRef}
+              className="absolute top-full left-0 right-0 mt-1 bg-[#111827] border border-white/10 rounded-md shadow-lg z-50 max-h-[300px] overflow-y-auto"
+            >
+              {isSearching ? (
+                <div className="flex items-center justify-center p-4">
+                  <Loader2 className="h-5 w-5 animate-spin text-[#3B82F6]" />
+                  <span className="ml-2 text-white/70">Searching...</span>
+                </div>
+              ) : searchResults.length > 0 ? (
+                <div className="py-1">
+                  {searchResults.map((result) => (
+                    <div
+                      key={result._id}
+                      className="px-4 py-2 hover:bg-white/10 cursor-pointer flex items-center"
+                      onClick={() => handleUserClick(result._id)}
+                    >
+                      <Avatar className="h-6 w-6 mr-2">
+                        <AvatarImage src={result.avatar} alt={result.userName} />
+                        <AvatarFallback className="text-xs">
+                          {result.userName?.slice(0, 2).toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium text-white">{result.userName}</p>
+                        <p className="text-xs text-white/60">{result.email}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 text-center text-white/60">
+                  No users found
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-4">

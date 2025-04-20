@@ -63,6 +63,7 @@
     "react-resizable-panels": "^2.1.7",
     "react-social-media-embed": "^2.5.18",
     "react-tweet": "^3.2.2",
+    "react-use": "^17.6.0",
     "recharts": "2.15.0",
     "socket.io-client": "^4.8.1",
     "sonner": "^1.7.1",

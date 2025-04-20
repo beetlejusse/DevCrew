@@ -69,13 +69,13 @@ export default function HackList() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div className="flex items-center">
-            <Terminal className="h-8 w-8 mr-3 text-violet-600 dark:text-violet-400" />
+            <Terminal className="h-8 w-8 mr-3 text-blue-600 dark:text-blue-400" />
             <h1 className="text-4xl font-bold tracking-tight">
-              <span className="text-violet-600 dark:text-violet-400">
+              <span className="text-blue-600 dark:text-blue-400">
                 {"<"}
               </span>
               Hackathons
-              <span className="text-violet-600 dark:text-violet-400">
+              <span className="text-blue-600 dark:text-blue-400">
                 {"/>"}
               </span>
             </h1>
@@ -83,7 +83,7 @@ export default function HackList() {
 
           <Button
             onClick={() => setIsCreateModalOpen(true)}
-            className="group bg-violet-600 hover:bg-violet-700 text-white"
+            className="group bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Plus className="mr-2 h-4 w-4 group-hover:rotate-90 transition-transform duration-200" />
             Create Hackathon
@@ -128,7 +128,7 @@ export default function HackList() {
                   </p>
                   <Button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="bg-violet-600 hover:bg-violet-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     <Plus className="mr-2 h-4 w-4" />
                     Create Your First Hackathon

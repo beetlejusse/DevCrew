@@ -44,6 +44,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 
 interface Hackathon {
+  _id: string;
   title: string;
 }
 
@@ -58,6 +59,7 @@ interface Team {
   name: string;
   members: string[]; // Array of user IDs
   hackathon: string;
+  hackathonTitle?: string; // Added to store the title
   head: string;
   joinCode?: string;
 }
@@ -74,6 +76,7 @@ export default function TeamManager() {
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("create");
+  const [hackathonTitles, setHackathonTitles] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -83,8 +86,24 @@ export default function TeamManager() {
           axios.get("/api/team"),
           axios.get("/api/user"),
         ]);
-        setHackathons(hackathonRes.data.hackathon);
-        setTeams(teamRes.data.teams);
+        
+        const hackathonData = hackathonRes.data.hackathon;
+        setHackathons(hackathonData);
+        
+        // Create a mapping of hackathon IDs to titles
+        const hackMap: { [key: string]: string } = {};
+        hackathonData.forEach((hack: Hackathon) => {
+          hackMap[hack._id] = hack.title;
+        });
+        setHackathonTitles(hackMap);
+        
+        // Enhance teams with hackathon titles
+        const teamsWithTitles = teamRes.data.teams.map((team: Team) => ({
+          ...team,
+          hackathonTitle: hackMap[team.hackathon] || "Unknown Hackathon"
+        }));
+        
+        setTeams(teamsWithTitles);
         setCurrentUser(userRes.data.user);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -124,7 +143,14 @@ export default function TeamManager() {
 
       // Refresh teams
       const updatedTeamsRes = await axios.get("/api/team");
-      setTeams(updatedTeamsRes.data.teams);
+      
+      // Add hackathon titles to the updated teams
+      const updatedTeamsWithTitles = updatedTeamsRes.data.teams.map((team: Team) => ({
+        ...team,
+        hackathonTitle: hackathonTitles[team.hackathon] || "Unknown Hackathon"
+      }));
+      
+      setTeams(updatedTeamsWithTitles);
     } catch (err: any) {
       console.error(err);
       setMessage(err.response?.data?.message || "Failed to create team.");
@@ -154,7 +180,14 @@ export default function TeamManager() {
 
       // Refresh teams
       const updatedTeamsRes = await axios.get("/api/team");
-      setTeams(updatedTeamsRes.data.teams);
+      
+      // Add hackathon titles to the updated teams
+      const updatedTeamsWithTitles = updatedTeamsRes.data.teams.map((team: Team) => ({
+        ...team,
+        hackathonTitle: hackathonTitles[team.hackathon] || "Unknown Hackathon"
+      }));
+      
+      setTeams(updatedTeamsWithTitles);
     } catch (err: any) {
       console.error("Join team error:", err);
       setMessage(err.response?.data?.error || "❌ Failed to join team.");
@@ -318,7 +351,7 @@ export default function TeamManager() {
                           </SelectTrigger>
                           <SelectContent>
                             {hackathons.map((hack) => (
-                              <SelectItem key={hack.title} value={hack.title}>
+                              <SelectItem key={hack._id} value={hack._id}>
                                 {hack.title}
                               </SelectItem>
                             ))}
@@ -533,7 +566,7 @@ export default function TeamManager() {
                               {team.name}
                             </h3>
                             <p className="text-xs text-muted-foreground">
-                              {team.hackathon}
+                              {team.hackathonTitle || "Unknown Hackathon"}
                             </p>
                           </div>
                         </div>
@@ -623,7 +656,7 @@ export default function TeamManager() {
                     </DialogTitle>
                     <DialogDescription className="text-center">
                       <Badge variant="outline" className="mt-1">
-                        {selectedTeam.hackathon}
+                        {selectedTeam.hackathonTitle || "Unknown Hackathon"}
                       </Badge>
                     </DialogDescription>
                   </DialogHeader>
@@ -669,12 +702,20 @@ export default function TeamManager() {
                           </p>
                         </div>
                       </div>
-                      <div className="bg-muted/30 rounded-lg p-3 text-center">
+                      <div className="bg-muted/30 rounded-lg p-3 text-center mt-3">
                         <p className="text-xs text-muted-foreground mb-1">
                           Members
                         </p>
                         <p className="text-sm font-medium">
                           {selectedTeam.members.length}
+                        </p>
+                      </div>
+                      <div className="bg-muted/30 rounded-lg p-3 text-center mt-3">
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Hackathon
+                        </p>
+                        <p className="text-sm font-medium">
+                          {selectedTeam.hackathonTitle || "Unknown Hackathon"}
                         </p>
                       </div>
                     </div>

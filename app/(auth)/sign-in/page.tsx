@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import { Github, Loader2, LockKeyhole, Mail } from "lucide-react"
+import { Loader2, LockKeyhole, Mail } from "lucide-react"
 import router, { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -47,7 +47,7 @@ export default function SignInPage({
     if (res?.ok) {
       toast.success("Login successful")
       onClose()
-      router.push("/dashboard") // or whatever your protected route is
+      router.push("/dashboard") 
     } else {
       setError("Invalid email or password")
     }

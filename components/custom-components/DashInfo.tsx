@@ -18,6 +18,12 @@ import {
   Users,
   ChevronRight,
   ExternalLink,
+  Briefcase,
+  Twitter,
+  Star,
+  GitFork,
+  X,
+  Trash2,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import type { JSX } from "react/jsx-runtime"
@@ -25,11 +31,20 @@ import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
+import { Tweet } from "react-tweet" // Make sure to install this package
 
 interface SocialLinks {
   github?: string
   linkedin?: string
   portfolio?: string
+}
+
+interface ProofOfWork {
+  platform: string
+  postUrl: string
+  description: string | null
+  addedAt: string
+  id: string
 }
 
 interface User {
@@ -41,6 +56,7 @@ interface User {
   skills: string[]
   interests: string[]
   socialLinks?: SocialLinks
+  proofOfWork?: ProofOfWork[]
   hackathons: string[]
   teams: string[]
   createdAt: string
@@ -70,6 +86,7 @@ export default function DashInfo() {
           !fetchedUser.socialLinks?.github,
           !fetchedUser.socialLinks?.linkedin,
           !fetchedUser.socialLinks?.portfolio,
+          !fetchedUser.proofOfWork || fetchedUser.proofOfWork.length === 0,
           fetchedUser.hackathons.length === 0,
           fetchedUser.teams.length === 0,
         ]
@@ -97,8 +114,8 @@ export default function DashInfo() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#050A14] to-[#0f172a] text-white">
-        <Loader2 className="h-12 w-12 animate-spin text-purple-500 mb-4" />
-        <p className="text-purple-300 animate-pulse">Loading your profile...</p>
+        <Loader2 className="h-12 w-12 animate-spin text-blue-500 mb-4" />
+        <p className="text-blue-300 animate-pulse">Loading your profile...</p>
       </div>
     )
   }
@@ -147,7 +164,7 @@ export default function DashInfo() {
       <motion.div initial="hidden" animate="visible" variants={containerVariants} className="max-w-7xl mx-auto">
         {/* Profile Header */}
         <motion.div variants={itemVariants} className="relative overflow-hidden rounded-2xl mb-6">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-700 opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo--800 via-blue-600 to-blue-400 opacity-90"></div>
           <div
             className="absolute inset-0 opacity-20"
             style={{
@@ -161,7 +178,7 @@ export default function DashInfo() {
               <div className="relative">
                 <Avatar className="h-28 w-28 border-4 border-white shadow-xl">
                   <AvatarImage src={user.avatar || ""} alt={user.userName} />
-                  <AvatarFallback className="bg-white text-purple-700 text-3xl font-bold">
+                  <AvatarFallback className="bg-white text-blue-700 text-3xl font-bold">
                     {user.userName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -175,7 +192,7 @@ export default function DashInfo() {
 
             <div className="flex-grow text-center md:text-left">
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-1">{user.userName}</h1>
-              <p className="text-purple-200 text-lg mb-2">{user.email}</p>
+              <p className="text-blue-200 text-lg mb-2">{user.email}</p>
 
               {user.bio && <p className="text-white/80 max-w-2xl mb-2 hidden md:block">{user.bio}</p>}
 
@@ -200,6 +217,12 @@ export default function DashInfo() {
                   <Badge variant="outline" className="bg-white/10 text-white border-white/20 px-3 py-1">
                     <Users className="w-3.5 h-3.5 mr-1" />
                     {user.teams.length} Team{user.teams.length !== 1 ? "s" : ""}
+                  </Badge>
+                )}
+                {user.proofOfWork && user.proofOfWork.length > 0 && (
+                  <Badge variant="outline" className="bg-white/10 text-white border-white/20 px-3 py-1">
+                    <Briefcase className="w-3.5 h-3.5 mr-1" />
+                    {user.proofOfWork.length} Proof{user.proofOfWork.length !== 1 ? "s" : ""} of Work
                   </Badge>
                 )}
               </div>
@@ -235,7 +258,6 @@ export default function DashInfo() {
                       <Progress
                         value={profileCompleteness}
                         className="h-2 bg-yellow-950"
-                        // indicatorClassName="bg-gradient-to-r from-yellow-400 to-amber-300"
                       />
                     </div>
                   </div>
@@ -256,32 +278,35 @@ export default function DashInfo() {
         <motion.div variants={itemVariants}>
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="bg-white/5 border border-white/10 mb-6">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600">
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="skills" className="data-[state=active]:bg-purple-600">
+              <TabsTrigger value="skills" className="data-[state=active]:bg-blue-600">
                 Skills & Interests
               </TabsTrigger>
-              <TabsTrigger value="hackathons" className="data-[state=active]:bg-purple-600">
+              <TabsTrigger value="pow" className="data-[state=active]:bg-blue-600">
+                Proof of Work
+              </TabsTrigger>
+              <TabsTrigger value="hackathons" className="data-[state=active]:bg-blue-600">
                 Hackathons & Teams
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ProfileCard icon={<Code className="w-5 h-5 text-purple-400" />} title="Bio" content={user.bio} />
+                <ProfileCard icon={<Code className="w-5 h-5 text-blue-400" />} title="Bio" content={user.bio} />
                 <ProfileCard
-                  icon={<MapPin className="w-5 h-5 text-purple-400" />}
+                  icon={<MapPin className="w-5 h-5 text-blue-400" />}
                   title="Location"
                   content={user.location}
                 />
                 <ProfileCard
-                  icon={<Calendar className="w-5 h-5 text-purple-400" />}
+                  icon={<Calendar className="w-5 h-5 text-blue-400" />}
                   title="Joined On"
                   content={new Date(user.createdAt).toLocaleDateString()}
                 />
                 <ProfileCard
-                  icon={<Globe className="w-5 h-5 text-purple-400" />}
+                  icon={<Globe className="w-5 h-5 text-blue-400" />}
                   title="Social Links"
                   social={user.socialLinks}
                 />
@@ -291,14 +316,14 @@ export default function DashInfo() {
             <TabsContent value="skills" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ProfileCard
-                  icon={<Code className="w-5 h-5 text-purple-400" />}
+                  icon={<Code className="w-5 h-5 text-blue-400" />}
                   title="Skills"
                   items={user.skills}
                   emptyMessage="No skills added yet"
-                  badgeColor="bg-purple-600/50 hover:bg-purple-600/70 border-purple-500"
+                  badgeColor="bg-blue-600/50 hover:bg-blue-600/70 border-blue-500"
                 />
                 <ProfileCard
-                  icon={<Heart className="w-5 h-5 text-purple-400" />}
+                  icon={<Heart className="w-5 h-5 text-blue-400" />}
                   title="Interests"
                   items={user.interests}
                   emptyMessage="No interests added yet"
@@ -307,10 +332,38 @@ export default function DashInfo() {
               </div>
             </TabsContent>
 
+            {/* Proof of Work Tab */}
+            <TabsContent value="pow" className="mt-0">
+              <div className="grid grid-cols-1 gap-6">
+                {user.proofOfWork && user.proofOfWork.length > 0 ? (
+                  user.proofOfWork.map((pow, index) => (
+                    <EnhancedProofOfWorkCard key={pow.id || index} pow={pow} />
+                  ))
+                ) : (
+                  <Card className="bg-white/5 border border-white/10 overflow-hidden">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col items-center justify-center text-center p-8">
+                        <Briefcase className="w-12 h-12 text-blue-400/50 mb-4" />
+                        <h3 className="text-xl font-medium text-white mb-2">No Proof of Work Added</h3>
+                        <p className="text-white/60 mb-6 max-w-md">
+                          Showcase your work by adding links to your projects, tweets, LinkedIn posts, or GitHub repositories.
+                        </p>
+                        <Link href="/profile">
+                          <button className="px-6 py-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-md transition-colors flex items-center gap-2">
+                            Add Proof of Work <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </TabsContent>
+
             <TabsContent value="hackathons" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ProfileCard
-                  icon={<Trophy className="w-5 h-5 text-purple-400" />}
+                  icon={<Trophy className="w-5 h-5 text-blue-400" />}
                   title="Hackathons"
                   items={user.hackathons.map((hack) => hack.toString())}
                   prefix="ID: "
@@ -318,7 +371,7 @@ export default function DashInfo() {
                   badgeColor="bg-amber-600/50 hover:bg-amber-600/70 border-amber-500"
                 />
                 <ProfileCard
-                  icon={<Users className="w-5 h-5 text-purple-400" />}
+                  icon={<Users className="w-5 h-5 text-blue-400" />}
                   title="Teams"
                   items={user.teams}
                   prefix="ID: "
@@ -375,11 +428,11 @@ const ProfileCard = ({
 }) => {
   return (
     <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-      <Card className="bg-white/5 border border-white/10 overflow-hidden hover:border-purple-500/50 transition-colors">
+      <Card className="bg-white/5 border border-white/10 overflow-hidden hover:border-blue-500/50 transition-colors">
         <CardContent className="p-0">
           <div className="p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className="bg-purple-900/50 p-2 rounded-md">{icon}</div>
+              <div className="bg-blue-900/50 p-2 rounded-md">{icon}</div>
               <h3 className="text-lg font-medium text-white">{title}</h3>
             </div>
 
@@ -433,7 +486,7 @@ const SocialLink = ({ icon, label, url }: { icon: JSX.Element; label: string; ur
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 text-purple-300 hover:text-purple-200 transition-colors group"
+      className="flex items-center gap-2 text-blue-300 hover:text-blue-200 transition-colors group"
     >
       {icon}
       <span>{label}</span>
@@ -441,3 +494,165 @@ const SocialLink = ({ icon, label, url }: { icon: JSX.Element; label: string; ur
     </a>
   )
 }
+
+// Enhanced Proof of Work Card component with embedded content
+const EnhancedProofOfWorkCard = ({ pow }: { pow: ProofOfWork }) => {
+  // Extract tweet ID from URL for Twitter embeds
+  const getTweetId = (url: string) => {
+    const parts = url.split('/');
+    return parts[parts.length - 1].split('?')[0];
+  };
+
+  // Get platform icon based on platform type
+  const getPlatformIcon = () => {
+    switch (pow.platform) {
+      case "twitter":
+        return <X className="h-5 w-5 text-blue-400" />;
+      case "linkedin":
+        return <Linkedin className="h-5 w-5 text-blue-700" />;
+      case "github":
+        return <Github className="h-5 w-5 text-white" />;
+      default:
+        return <Globe className="h-5 w-5 text-blue-400" />;
+    }
+  };
+
+  // Get platform name for display
+  const getPlatformName = () => {
+    switch (pow.platform) {
+      case "twitter":
+        return "Twitter";
+      case "linkedin":
+        return "LinkedIn";
+      case "github":
+        return "GitHub";
+      default:
+        return "External Link";
+    }
+  };
+
+  // Get platform-specific styling
+  const getPlatformStyle = () => {
+    switch (pow.platform) {
+      case "twitter":
+        return "bg-blue-500/20 border-blue-500/30 text-blue-400";
+      case "linkedin":
+        return "bg-blue-700/20 border-blue-700/30 text-blue-300";
+      case "github":
+        return "bg-gray-700/30 border-gray-600/30 text-gray-300";
+      default:
+        return "bg-blue-600/20 border-blue-600/30 text-blue-300";
+    }
+  };
+
+  // Get a default title if description is missing
+  const getTitle = () => {
+    if (pow.description) {
+      return pow.description;
+    }
+    return `${getPlatformName()} Content`;
+  };
+
+  return (
+    <Card className="bg-[#0B1120] border border-white/10 overflow-hidden">
+      <CardContent className="p-0">
+        <div className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className={`p-2 rounded-full ${getPlatformStyle()}`}>
+              {getPlatformIcon()}
+            </div>
+            <div>
+              <div className="text-lg font-medium text-white">{getTitle()}</div>
+              <div className="text-sm text-gray-400 flex items-center gap-1">
+                <span>Added on {new Date(pow.addedAt).toLocaleDateString()}</span>
+                <span className="mx-1">•</span>
+                <span className="flex items-center gap-1">
+                  {getPlatformIcon()}
+                  <span className="text-xs">{getPlatformName()}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          {pow.platform === "twitter" && (
+            <div className="mt-4 bg-black rounded-xl overflow-hidden">
+              <div className="flex justify-center">
+                <Tweet id={getTweetId(pow.postUrl)} />
+              </div>
+            </div>
+          )}
+          
+          {pow.platform === "linkedin" && (
+            <div className="mt-4 p-6 bg-blue-700/10 border border-blue-700/30 rounded-xl">
+              <div className="flex flex-col items-center gap-4">
+                <Linkedin className="h-12 w-12 text-blue-600" />
+                <p className="text-center text-white/80">
+                  LinkedIn content cannot be displayed directly due to embedding restrictions.
+                </p>
+                <a
+                  href={pow.postUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-md transition-colors flex items-center gap-2"
+                >
+                  View on LinkedIn <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+          )}
+          
+          {pow.platform === "github" && (
+            <div className="mt-4 p-4 bg-gray-900 border border-gray-700 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <Github className="h-6 w-6 text-white" />
+                <h3 className="text-lg font-medium text-white">
+                  {pow.postUrl.replace('https://github.com/', '')}
+                </h3>
+              </div>
+              
+              <div className="flex flex-wrap gap-4 text-sm text-gray-300">
+                <div className="flex items-center gap-1">
+                  <Code className="h-4 w-4" />
+                  <span>Repository</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  <span>Stars</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <GitFork className="h-4 w-4" />
+                  <span>Forks</span>
+                </div>
+              </div>
+              
+              <div className="mt-4 flex justify-end">
+                <a
+                  href={pow.postUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors flex items-center gap-2"
+                >
+                  View Repository <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+          )}
+          
+          {/* Only show View button for Twitter since the content is already embedded */}
+          {pow.platform === "twitter" && (
+            <div className="mt-4 flex justify-end">
+              <a
+                href={pow.postUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`px-4 py-2 ${getPlatformStyle()} rounded-md transition-colors flex items-center gap-2`}
+              >
+                View on Twitter <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

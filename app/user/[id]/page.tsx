@@ -1,10 +1,11 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type React from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
+import { useParams } from "next/navigation"
+import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Loader2,
   Github,
@@ -18,78 +19,78 @@ import {
   Trophy,
   Users,
   Briefcase,
-  Twitter,
   Star,
   GitFork,
   X,
   ExternalLink,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
-import { Tweet } from "react-tweet";
-import DashNav from "@/components/custom-components/DashNav";
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { motion } from "framer-motion"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Link from "next/link"
+import { Tweet } from "react-tweet"
+import DashNav from "@/components/custom-components/DashNav"
 
 // Interfaces
 interface SocialLinks {
-  github?: string;
-  linkedin?: string;
-  portfolio?: string;
+  github?: string
+  linkedin?: string
+  portfolio?: string
 }
 
 interface ProofOfWork {
-  platform: string;
-  postUrl: string;
-  description: string | null;
-  addedAt: string;
-  id: string;
+  platform: string
+  postUrl: string
+  description: string | null
+  addedAt: string
+  id: string
 }
 
 interface User {
-  _id: string;
-  userName: string;
-  email: string;
-  avatar?: string;
-  bio?: string;
-  location?: string;
-  skills: string[];
-  interests: string[];
-  socialLinks?: SocialLinks;
-  proofOfWork?: ProofOfWork[];
-  hackathons: string[];
-  teams: string[];
-  createdAt: string;
+  _id: string
+  userName: string
+  email: string
+  avatar?: string
+  bio?: string
+  location?: string
+  skills: string[]
+  interests: string[]
+  socialLinks?: SocialLinks
+  proofOfWork?: ProofOfWork[]
+  hackathons: string[]
+  teams: string[]
+  createdAt: string
 }
 
 export default function UserProfilePage() {
-  const params = useParams();
-  const id = params?.id as string;
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const params = useParams()
+  const id = params?.id as string
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isConnected, setIsConnected] = useState<boolean>(false)
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        setLoading(true);
+        setLoading(true)
         // Make sure the API endpoint is correct
-        console.log(`Fetching user with ID: ${id}`);
-        const res = await axios.get(`/api/user/${id}`);
-        console.log("API response:", res.data);
-        setUser(res.data.user);
+        console.log(`Fetching user with ID: ${id}`)
+        const res = await axios.get(`/api/user/${id}`)
+        console.log("API response:", res.data)
+        setUser(res.data.user)
       } catch (err: any) {
-        console.error("Error fetching user:", err);
-        setError(err?.response?.data?.error || "Failed to fetch user details. Please try again later.");
+        console.error("Error fetching user:", err)
+        setError(err?.response?.data?.error || "Failed to fetch user details. Please try again later.")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     if (id) {
-      fetchUser();
+      fetchUser()
     }
-  }, [id]);
+  }, [id])
 
   if (loading) {
     return (
@@ -100,7 +101,7 @@ export default function UserProfilePage() {
           <p className="text-blue-300 animate-pulse">Loading profile...</p>
         </div>
       </>
-    );
+    )
   }
 
   if (error || !user) {
@@ -119,7 +120,7 @@ export default function UserProfilePage() {
           </div>
         </div>
       </>
-    );
+    )
   }
 
   const containerVariants = {
@@ -130,7 +131,7 @@ export default function UserProfilePage() {
         staggerChildren: 0.1,
       },
     },
-  };
+  }
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
@@ -142,7 +143,7 @@ export default function UserProfilePage() {
         stiffness: 100,
       },
     },
-  };
+  }
 
   return (
     <>
@@ -215,10 +216,36 @@ export default function UserProfilePage() {
                 </div>
               </div>
 
-              <div className="flex-shrink-0 mt-4 md:mt-0 flex gap-2">
+              <div className="flex-shrink-0 mt-4 md:mt-0 flex gap-2 items-center">
                 <SocialButton url={user.socialLinks?.github} icon={<Github className="w-5 h-5" />} label="GitHub" />
-                <SocialButton url={user.socialLinks?.linkedin} icon={<Linkedin className="w-5 h-5" />} label="LinkedIn" />
-                <SocialButton url={user.socialLinks?.portfolio} icon={<Globe className="w-5 h-5" />} label="Portfolio" />
+                <SocialButton
+                  url={user.socialLinks?.linkedin}
+                  icon={<Linkedin className="w-5 h-5" />}
+                  label="LinkedIn"
+                />
+                <SocialButton
+                  url={user.socialLinks?.portfolio}
+                  icon={<Globe className="w-5 h-5" />}
+                  label="Portfolio"
+                />
+                <button
+                  className={`ml-2 px-4 py-1.5 ${
+                    isConnected ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"
+                  } text-white rounded-full flex items-center gap-1.5 transition-colors text-sm font-medium`}
+                  onClick={() => setIsConnected(true)}
+                >
+                  {isConnected ? (
+                    <>
+                      <Users className="w-4 h-4" />
+                      Connected
+                    </>
+                  ) : (
+                    <>
+                      <Users className="w-4 h-4" />
+                      Connect
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </motion.div>
@@ -285,18 +312,14 @@ export default function UserProfilePage() {
               <TabsContent value="pow" className="mt-0">
                 <div className="grid grid-cols-1 gap-6">
                   {user.proofOfWork && user.proofOfWork.length > 0 ? (
-                    user.proofOfWork.map((pow, index) => (
-                      <EnhancedProofOfWorkCard key={pow.id || index} pow={pow} />
-                    ))
+                    user.proofOfWork.map((pow, index) => <EnhancedProofOfWorkCard key={pow.id || index} pow={pow} />)
                   ) : (
                     <Card className="bg-white/5 border border-white/10 overflow-hidden">
                       <CardContent className="p-6">
                         <div className="flex flex-col items-center justify-center text-center p-8">
                           <Briefcase className="w-12 h-12 text-blue-400/50 mb-4" />
                           <h3 className="text-xl font-medium text-white mb-2">No Proof of Work Added</h3>
-                          <p className="text-white/60 mb-6 max-w-md">
-                            This user hasn't added any proof of work yet.
-                          </p>
+                          <p className="text-white/60 mb-6 max-w-md">This user hasn't added any proof of work yet.</p>
                         </div>
                       </CardContent>
                     </Card>
@@ -329,13 +352,13 @@ export default function UserProfilePage() {
         </motion.div>
       </div>
     </>
-  );
+  )
 }
 
 // Reusable components (copy from your DashInfo component)
 const SocialButton = ({ url, icon, label }: { url?: string; icon: React.ReactNode; label: string }) => {
   if (!url) {
-    return null;
+    return null
   }
 
   return (
@@ -348,8 +371,8 @@ const SocialButton = ({ url, icon, label }: { url?: string; icon: React.ReactNod
     >
       {icon}
     </a>
-  );
-};
+  )
+}
 
 const ProfileCard = ({
   icon,
@@ -361,14 +384,14 @@ const ProfileCard = ({
   emptyMessage = "Not provided",
   badgeColor = "bg-blue-600/50 hover:bg-blue-600/70 border-blue-500",
 }: {
-  icon: React.ReactNode;
-  title: string;
-  content?: string;
-  items?: string[];
-  prefix?: string;
-  social?: SocialLinks;
-  emptyMessage?: string;
-  badgeColor?: string;
+  icon: React.ReactNode
+  title: string
+  content?: string
+  items?: string[]
+  prefix?: string
+  social?: SocialLinks
+  emptyMessage?: string
+  badgeColor?: string
 }) => {
   return (
     <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
@@ -412,8 +435,8 @@ const ProfileCard = ({
         </CardContent>
       </Card>
     </motion.div>
-  );
-};
+  )
+}
 
 const SocialLink = ({ icon, label, url }: { icon: React.ReactNode; label: string; url?: string }) => {
   if (!url) {
@@ -422,7 +445,7 @@ const SocialLink = ({ icon, label, url }: { icon: React.ReactNode; label: string
         {icon}
         <span>{label} - Not provided</span>
       </p>
-    );
+    )
   }
 
   return (
@@ -436,75 +459,73 @@ const SocialLink = ({ icon, label, url }: { icon: React.ReactNode; label: string
       <span>{label}</span>
       <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
     </a>
-  );
-};
+  )
+}
 
 // Enhanced Proof of Work Card component with embedded content
 const EnhancedProofOfWorkCard = ({ pow }: { pow: ProofOfWork }) => {
   // Extract tweet ID from URL for Twitter embeds
   const getTweetId = (url: string) => {
-    const parts = url.split('/');
-    return parts[parts.length - 1].split('?')[0];
-  };
+    const parts = url.split("/")
+    return parts[parts.length - 1].split("?")[0]
+  }
 
   // Get platform icon based on platform type
   const getPlatformIcon = () => {
     switch (pow.platform) {
       case "twitter":
-        return <X className="h-5 w-5 text-blue-400" />;
+        return <X className="h-5 w-5 text-blue-400" />
       case "linkedin":
-        return <Linkedin className="h-5 w-5 text-blue-700" />;
+        return <Linkedin className="h-5 w-5 text-blue-700" />
       case "github":
-        return <Github className="h-5 w-5 text-white" />;
+        return <Github className="h-5 w-5 text-white" />
       default:
-        return <Globe className="h-5 w-5 text-blue-400" />;
+        return <Globe className="h-5 w-5 text-blue-400" />
     }
-  };
+  }
 
   // Get platform name for display
   const getPlatformName = () => {
     switch (pow.platform) {
       case "twitter":
-        return "Twitter";
+        return "Twitter"
       case "linkedin":
-        return "LinkedIn";
+        return "LinkedIn"
       case "github":
-        return "GitHub";
+        return "GitHub"
       default:
-        return "External Link";
+        return "External Link"
     }
-  };
+  }
 
   // Get platform-specific styling
   const getPlatformStyle = () => {
     switch (pow.platform) {
       case "twitter":
-        return "bg-blue-500/20 border-blue-500/30 text-blue-400";
+        return "bg-blue-500/20 border-blue-500/30 text-blue-400"
       case "linkedin":
-        return "bg-blue-700/20 border-blue-700/30 text-blue-300";
+        return "bg-blue-700/20 border-blue-700/30 text-blue-300"
       case "github":
-        return "bg-gray-700/30 border-gray-600/30 text-gray-300";
+        return "bg-gray-700/30 border-gray-600/30 text-gray-300"
       default:
-        return "bg-blue-600/20 border-blue-600/30 text-blue-300";
+        return "bg-blue-600/20 border-blue-600/30 text-blue-300"
     }
-  };
+  }
 
   // Get a default title if description is missing
   const getTitle = () => {
     if (pow.description) {
-      return pow.description;
+      return pow.description
     }
-    return `${getPlatformName()} Content`;
-  };
+    return `${getPlatformName()} Content`
+  }
 
   return (
     <Card className="bg-[#0B1120] border border-white/10 overflow-hidden">
       <CardContent className="p-0">
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className={`p-2 rounded-full ${getPlatformStyle()}`}>
-              {getPlatformIcon()}
-            </div>
+            <div className={`p-2 rounded-full ${getPlatformStyle()}`}>{getPlatformIcon()}</div>
             <div>
               <div className="text-lg font-medium text-white">{getTitle()}</div>
               <div className="text-sm text-gray-400 flex items-center gap-1">
@@ -517,7 +538,7 @@ const EnhancedProofOfWorkCard = ({ pow }: { pow: ProofOfWork }) => {
               </div>
             </div>
           </div>
-          
+
           {pow.platform === "twitter" && (
             <div className="mt-4 bg-black rounded-xl overflow-hidden">
               <div className="flex justify-center">
@@ -525,7 +546,7 @@ const EnhancedProofOfWorkCard = ({ pow }: { pow: ProofOfWork }) => {
               </div>
             </div>
           )}
-          
+
           {pow.platform === "linkedin" && (
             <div className="mt-4 p-6 bg-blue-700/10 border border-blue-700/30 rounded-xl">
               <div className="flex flex-col items-center gap-4">
@@ -544,16 +565,14 @@ const EnhancedProofOfWorkCard = ({ pow }: { pow: ProofOfWork }) => {
               </div>
             </div>
           )}
-          
+
           {pow.platform === "github" && (
             <div className="mt-4 p-4 bg-gray-900 border border-gray-700 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <Github className="h-6 w-6 text-white" />
-                <h3 className="text-lg font-medium text-white">
-                  {pow.postUrl.replace('https://github.com/', '')}
-                </h3>
+                <h3 className="text-lg font-medium text-white">{pow.postUrl.replace("https://github.com/", "")}</h3>
               </div>
-              
+
               <div className="flex flex-wrap gap-4 text-sm text-gray-300">
                 <div className="flex items-center gap-1">
                   <Code className="h-4 w-4" />
@@ -568,7 +587,7 @@ const EnhancedProofOfWorkCard = ({ pow }: { pow: ProofOfWork }) => {
                   <span>Forks</span>
                 </div>
               </div>
-              
+
               <div className="mt-4 flex justify-end">
                 <a
                   href={pow.postUrl}
@@ -581,7 +600,7 @@ const EnhancedProofOfWorkCard = ({ pow }: { pow: ProofOfWork }) => {
               </div>
             </div>
           )}
-          
+
           {/* Only show View button for Twitter since the content is already embedded */}
           {pow.platform === "twitter" && (
             <div className="mt-4 flex justify-end">
@@ -598,5 +617,5 @@ const EnhancedProofOfWorkCard = ({ pow }: { pow: ProofOfWork }) => {
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

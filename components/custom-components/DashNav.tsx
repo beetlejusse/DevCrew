@@ -104,7 +104,6 @@ const DashNav = () => {
   const handleUserClick = (userId: string) => {
     setShowResults(false);
     setSearchQuery("");
-    // Navigate to the user profile page
     router.push(`/user/${userId}`);
   };
 
@@ -152,7 +151,6 @@ const DashNav = () => {
             </button>
           )}
           
-          {/* Search Results Dropdown */}
           {showResults && (
             <div 
               ref={searchResultsRef}
@@ -194,13 +192,6 @@ const DashNav = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="relative text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 hover:scale-110 hover:glow-icon">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-[#3B82F6] text-[10px] font-medium text-white flex items-center justify-center animate-pulse glow-border-strong">
-              3
-            </span>
-          </Button>
-
           <Button variant="ghost" size="icon" asChild className="relative text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 hover:scale-110 hover:glow-icon">
             <Link href="/chat">
               <MessageSquare className="h-5 w-5" />
@@ -210,7 +201,6 @@ const DashNav = () => {
             </Link>
           </Button>
 
-          {/* Avatar and Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-glow">

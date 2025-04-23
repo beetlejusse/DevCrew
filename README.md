@@ -1,6 +1,6 @@
 # DevCrew - Hackathon Team Finder
 
-![demo (1)](https://github.com/user-attachments/assets/eeb2ed8a-0a4b-494e-bfa8-fd73d2907d3f)
+![demo (1)](https://github.com/user-attachments/assets/7d7ec122-274d-4f6e-b00e-7f352a6819fc)
 
 DevCrew is a platform designed to connect developers for hackathons. Our platform simplifies the process of finding teammates with complementary skills, joining existing teams, and showcasing your work to potential collaborators.
 

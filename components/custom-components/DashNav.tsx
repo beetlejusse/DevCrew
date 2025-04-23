@@ -13,7 +13,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Code,
   Search,
-  Bell,
   MessageSquare,
   User,
   LogOut,
